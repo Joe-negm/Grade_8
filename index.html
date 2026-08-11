@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Subtraction Safari — Learn to Subtract!</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --sky-top: #7dd3fc;
+      --sky-mid: #38bdf8;
+      --sky-bot: #bae6fd;
+      --grass: #4ade80;
+      --grass-dark: #22c55e;
+      --sun: #fde047;
+      --ink: #0f172a;
+      --card: rgba(255, 255, 255, 0.92);
+      --accent: #f97316;
+      --good: #22c55e;
+      --bad: #ef4444;
+      --purple: #a855f7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      font-family: "Fredoka", system-ui, sans-serif;
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, #fff7ed 0%, transparent 55%),
+        linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 38%, var(--sky-bot) 62%, #86efac 62%, var(--grass) 78%, var(--grass-dark) 100%);
+      position: relative;
+    }
+
+    /* ===== Background scenery ===== */
+    .sky-decor {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .sun {
+      position: absolute;
+      top: 4%;
+      right: 8%;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fffbeb, var(--sun) 45%, #fbbf24 100%);
+      box-shadow:
+        0 0 0 12px rgba(253, 224, 71, 0.35),
+        0 0 60px 20px rgba(251, 191, 36, 0.45);
+      animation: sun-pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes sun-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .cloud {
+      position: absolute;
+      background: #fff;
+      border-radius: 999px;
+      opacity: 0.92;
+      filter: drop-shadow(0 8px 12px rgba(14, 165, 233, 0.15));
+      animation: drift linear infinite;
+    }
+    .cloud::before, .cloud::after {
+      content: "";
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+    }
+    .cloud-1 { width: 140px; height: 44px; top: 12%; left: -160px; animation-duration: 48s; }
+    .cloud-1::before { width: 60px; height: 60px; top: -30px; left: 22px; }
+    .cloud-1::after { width: 48px; height: 48px; top: -22px; left: 68px; }
+    .cloud-2 { width: 180px; height: 50px; top: 22%; left: -200px; animation-duration: 62s; animation-delay: -20s; }
+    .cloud-2::before { width: 70px; height: 70px; top: -36px; left: 30px; }
+    .cloud-2::after { width: 56px; height: 56px; top: -26px; left: 90px; }
+    .cloud-3 { width: 120px; height: 38px; top: 8%; left: -140px; animation-duration: 55s; animation-delay: -35s; }
+    .cloud-3::before { width: 50px; height: 50px; top: -26px; left: 18px; }
+    .cloud-3::after { width: 40px; height: 40px; top: -18px; left: 58px; }
+
+    @keyframes drift {
+      from { transform: translateX(0); }
+      to { transform: translateX(calc(100vw + 280px)); }
+    }
+
+    .hill {
+      position: absolute;
+      bottom: 0;
+      border-radius: 50% 50% 0 0;
+      background: linear-gradient(180deg, #86efac, #4ade80 40%, #22c55e);
+      opacity: 0.55;
+    }
+    .hill-1 { width: 70vw; height: 28vh; left: -10vw; bottom: -5vh; }
+    .hill-2 { width: 60vw; height: 22vh; right: -8vw; bottom: -4vh; opacity: 0.4; }
+
+    .stars-layer {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(2px 2px at 30% 40%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1.5px 1.5px at 70% 15%, rgba(255,255,255,0.65), transparent),
+        radial-gradient(2px 2px at 85% 35%, rgba(255,255,255,0.45), transparent);
+      opacity: 0.35;
+      animation: twinkle 3s ease-in-out infinite alternate;
+    }
+    @keyframes twinkle { from { opacity: 0.2; } to { opacity: 0.45; } }
+
+    /* ===== Layout ===== */
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem 1rem 2.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== Screens ===== */
+    .screen { display: none; flex: 1; flex-direction: column; animation: fade-in 0.45s ease; }
+    .screen.active { display: flex; }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Header / HUD ===== */
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .logo-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #fb923c, #ea580c);
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+      box-shadow: 0 8px 0 #c2410c, 0 12px 24px rgba(234, 88, 12, 0.35);
+      animation: badge-bob 2.4s ease-in-out infinite;
+    }
+    @keyframes badge-bob {
+      0%, 100% { transform: translateY(0) rotate(-4deg); }
+      50% { transform: translateY(-6px) rotate(4deg); }
+    }
+    .logo h1 {
+      font-family: "Nunito", sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      letter-spacing: -0.02em;
+      color: #0c4a6e;
+      text-shadow: 0 2px 0 rgba(255,255,255,0.6);
+    }
+    .logo p { font-size: 0.8rem; color: #0369a1; font-weight: 500; }
+
+    .hud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .hud-pill {
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255,255,255,0.8);
+      border-radius: 999px;
+      padding: 0.45rem 0.9rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 6px 16px rgba(14, 116, 144, 0.12);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #0c4a6e;
+    }
+    .hud-pill strong { color: #ea580c; font-family: "Nunito", sans-serif; }
+
+    /* ===== Cards ===== */
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(14px);
+      border: 3px solid rgba(255,255,255,0.85);
+      border-radius: 28px;
+      box-shadow:
+        0 20px 50px rgba(14, 116, 144, 0.18),
+        0 4px 0 rgba(255,255,255,0.9) inset;
+      padding: clamp(1.25rem, 3vw, 2rem);
+    }
+
+    /* ===== Start screen ===== */
+    .hero {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    @media (min-width: 860px) {
+      .hero { grid-template-columns: 1.05fr 0.95fr; }
+    }
+
+    .hero-copy h2 {
+      font-family: "Nunito", sans-serif;
+      font-weight: 900;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.1;
+      color: #0c4a6e;
+      margin-bottom: 0.75rem;
+    }
+    .hero-copy h2 span {
+      background: linear-gradient(90deg, #ea580c, #db2777, #7c3aed);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero-copy p {
+      font-size: 1.1rem;
+      color: #334155;
+      line-height: 1.55;
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 0.65rem;
+      margin-bottom: 1.5rem;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      background: linear-gradient(90deg, rgba(255,255,255,0.7), rgba(255,255,255,0.35));
+      border-radius: 16px;
+      padding: 0.7rem 0.9rem;
+      font-weight: 600;
+      color: #0f172a;
+      border: 2px solid rgba(255,255,255,0.7);
+    }
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .fi-1 { background: #fef3c7; }
+    .fi-2 { background: #dbeafe; }
+    .fi-3 { background: #dcfce7; }
+
+    .difficulty {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+    .diff-btn {
+      border: 3px solid transparent;
+      border-radius: 18px;
+      padding: 0.85rem 0.5rem;
+      background: #f1f5f9;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 700;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.15s;
+      color: #334155;
+    }
+    .diff-btn small {
+      display: block;
+      font-weight: 500;
+      font-size: 0.75rem;
+      opacity: 0.75;
+      margin-top: 0.2rem;
+    }
+    .diff-btn:hover { transform: translateY(-2px); }
+    .diff-btn.selected {
+      background: #fff7ed;
+      border-color: #fb923c;
+      box-shadow: 0 8px 0 #fdba74;
+      color: #c2410c;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 18px;
+      padding: 0.95rem 1.4rem;
+      font-size: 1.1rem;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      user-select: none;
+    }
+    .btn:active { transform: translateY(3px); }
+    .btn-primary {
+      background: linear-gradient(180deg, #fb923c, #ea580c);
+      color: white;
+      box-shadow: 0 8px 0 #c2410c, 0 14px 28px rgba(234, 88, 12, 0.35);
+      width: 100%;
+    }
+    .btn-primary:hover { filter: brightness(1.05); }
+    .btn-primary:active { box-shadow: 0 4px 0 #c2410c, 0 8px 16px rgba(234, 88, 12, 0.3); }
+    .btn-secondary {
+      background: white;
+      color: #0369a1;
+      border: 3px solid #7dd3fc;
+      box-shadow: 0 6px 0 #38bdf8;
+    }
+    .btn-secondary:active { box-shadow: 0 2px 0 #38bdf8; }
+    .btn-ghost {
+      background: rgba(255,255,255,0.75);
+      color: #0c4a6e;
+      border: 2px solid rgba(255,255,255,0.9);
+      box-shadow: 0 4px 12px rgba(14,116,144,0.1);
+      font-size: 0.95rem;
+      padding: 0.65rem 1rem;
+      border-radius: 14px;
+    }
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* ===== Character stage ===== */
+    .stage-wrap {
+      position: relative;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 0.5rem;
+    }
+
+    .stage-ground {
+      position: absolute;
+      bottom: 40px;
+      left: 10%;
+      right: 10%;
+      height: 24px;
+      background: linear-gradient(180deg, #86efac, #4ade80);
+      border-radius: 50%;
+      box-shadow: 0 10px 0 rgba(34, 197, 94, 0.35);
+      z-index: 0;
+    }
+
+    .character-row {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: clamp(0.5rem, 2vw, 1.25rem);
+      width: 100%;
+      min-height: 280px;
+    }
+
+    /* Owl teacher */
+    .owl {
+      width: 150px;
+      height: 170px;
+      position: relative;
+      animation: owl-idle 3s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes owl-idle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .owl.talking { animation: owl-talk 0.35s ease-in-out infinite; }
+    @keyframes owl-talk {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-4px) scale(1.02); }
+    }
+    .owl.celebrate {
+      animation: owl-celebrate 0.6s ease infinite;
+    }
+    @keyframes owl-celebrate {
+      0%, 100% { transform: rotate(-8deg) translateY(0); }
+      50% { transform: rotate(8deg) translateY(-16px); }
+    }
+    .owl.sad {
+      animation: owl-sad 1.2s ease-in-out;
+    }
+    @keyframes owl-sad {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      30% { transform: translateY(6px) rotate(-3deg); }
+      60% { transform: translateY(4px) rotate(3deg); }
+    }
+
+    .owl-body {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 130px;
+      background: linear-gradient(160deg, #fdba74, #fb923c 40%, #ea580c);
+      border-radius: 60px 60px 50px 50px;
+      box-shadow:
+        inset 0 -18px 0 rgba(194, 65, 12, 0.25),
+        0 12px 24px rgba(194, 65, 12, 0.25);
+    }
+    .owl-belly {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 72px;
+      background: #fff7ed;
+      border-radius: 40px;
+    }
+    .owl-face {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 78px;
+      background: linear-gradient(180deg, #fed7aa, #fdba74);
+      border-radius: 50px 50px 40px 40px;
+    }
+    .owl-eye {
+      position: absolute;
+      top: 22px;
+      width: 32px;
+      height: 32px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    .owl-eye.left { left: 14px; }
+    .owl-eye.right { right: 14px; }
+    .owl-pupil {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 14px;
+      height: 14px;
+      background: #0f172a;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .owl-pupil::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 5px;
+      height: 5px;
+      background: white;
+      border-radius: 50%;
+    }
+    .owl.blink .owl-eye { height: 4px; top: 36px; }
+    .owl.blink .owl-pupil { opacity: 0; }
+    .owl-beak {
+      position: absolute;
+      top: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 14px solid #f59e0b;
+      z-index: 2;
+    }
+    .owl-brow {
+      position: absolute;
+      top: 16px;
+      width: 22px;
+      height: 5px;
+      background: #c2410c;
+      border-radius: 4px;
+    }
+    .owl-brow.left { left: 18px; transform: rotate(-8deg); }
+    .owl-brow.right { right: 18px; transform: rotate(8deg); }
+    .owl.happy .owl-brow.left { transform: rotate(12deg); top: 18px; }
+    .owl.happy .owl-brow.right { transform: rotate(-12deg); top: 18px; }
+    .owl.sad .owl-brow.left { transform: rotate(-18deg); top: 14px; }
+    .owl.sad .owl-brow.right { transform: rotate(18deg); top: 14px; }
+    .owl-wing {
+      position: absolute;
+      bottom: 40px;
+      width: 36px;
+      height: 56px;
+      background: linear-gradient(180deg, #fb923c, #c2410c);
+      border-radius: 30px;
+      z-index: -1;
+    }
+    .owl-wing.left { left: 2px; transform: rotate(18deg); transform-origin: top center; animation: wing-l 3s ease-in-out infinite; }
+    .owl-wing.right { right: 2px; transform: rotate(-18deg); transform-origin: top center; animation: wing-r 3s ease-in-out infinite; }
+    @keyframes wing-l {
+      0%, 100% { transform: rotate(18deg); }
+      50% { transform: rotate(28deg); }
+    }
+    @keyframes wing-r {
+      0%, 100% { transform: rotate(-18deg); }
+      50% { transform: rotate(-28deg); }
+    }
+    .owl.celebrate .owl-wing.left { animation: wing-flap-l 0.3s ease infinite; }
+    .owl.celebrate .owl-wing.right { animation: wing-flap-r 0.3s ease infinite; }
+    @keyframes wing-flap-l {
+      0%, 100% { transform: rotate(10deg); }
+      50% { transform: rotate(50deg); }
+    }
+    @keyframes wing-flap-r {
+      0%, 100% { transform: rotate(-10deg); }
+      50% { transform: rotate(-50deg); }
+    }
+    .owl-feet {
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 28px;
+    }
+    .owl-foot {
+      width: 22px;
+      height: 12px;
+      background: #f59e0b;
+      border-radius: 0 0 10px 10px;
+    }
+    .owl-hat {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 54px;
+      height: 28px;
+      background: #7c3aed;
+      border-radius: 8px 8px 2px 2px;
+      box-shadow: 0 4px 0 #5b21b6;
+      z-index: 3;
+    }
+    .owl-hat::before {
+      content: "";
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 20px;
+      background: #7c3aed;
+      border-radius: 8px 8px 0 0;
+    }
+    .owl-hat::after {
+      content: "−";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-weight: 900;
+      font-size: 1.1rem;
+      font-family: "Nunito", sans-serif;
+    }
+    .speech {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-30%);
+      background: white;
+      border: 3px solid #fdba74;
+      border-radius: 18px;
+      padding: 0.65rem 0.9rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #9a3412;
+      max-width: 180px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      z-index: 5;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+    }
+    .speech.show {
+      opacity: 1;
+      transform: translateX(-30%) translateY(-6px);
+    }
+    .speech::after {
+      content: "";
+      position: absolute;
+      bottom: -12px;
+      left: 28px;
+      border: 8px solid transparent;
+      border-top-color: #fdba74;
+    }
+
+    /* Fruit characters (countables) */
+    .fruit-area {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 0.35rem;
+      max-width: 320px;
+      min-height: 160px;
+      padding: 0.5rem;
+    }
+    .fruit {
+      width: 52px;
+      height: 52px;
+      position: relative;
+      animation: fruit-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      transition: transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.35s;
+    }
+    .fruit.leaving {
+      animation: fruit-leave 0.55s ease forwards;
+    }
+    .fruit.gone {
+      opacity: 0.2;
+      filter: grayscale(0.8);
+      transform: scale(0.75);
+    }
+    @keyframes fruit-pop {
+      from { transform: scale(0) translateY(20px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    @keyframes fruit-leave {
+      0% { transform: scale(1) translateY(0) rotate(0); opacity: 1; }
+      40% { transform: scale(1.15) translateY(-20px) rotate(-10deg); opacity: 1; }
+      100% { transform: scale(0.3) translateY(-80px) rotate(25deg); opacity: 0; }
+    }
+    .fruit-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 4px 3px rgba(0,0,0,0.15));
+      animation: fruit-bob 2.2s ease-in-out infinite;
+    }
+    .fruit:nth-child(odd) .fruit-svg { animation-delay: -0.4s; }
+    .fruit:nth-child(3n) .fruit-svg { animation-delay: -0.9s; }
+    @keyframes fruit-bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    /* Fox helper */
+    .fox {
+      width: 120px;
+      height: 130px;
+      position: relative;
+      flex-shrink: 0;
+      animation: fox-idle 2.6s ease-in-out infinite;
+    }
+    @keyframes fox-idle {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      50% { transform: translateY(-6px) rotate(1deg); }
+    }
+    .fox.jump {
+      animation: fox-jump 0.55s ease;
+    }
+    @keyframes fox-jump {
+      0%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-28px) scale(1.05); }
+      70% { transform: translateY(-8px); }
+    }
+    .fox-body {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 78px;
+      height: 70px;
+      background: linear-gradient(160deg, #fb923c, #ea580c);
+      border-radius: 40px 40px 30px 30px;
+      box-shadow: inset 0 -12px 0 rgba(194,65,12,0.2);
+    }
+    .fox-belly {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 36px;
+      background: #ffedd5;
+      border-radius: 20px;
+    }
+    .fox-head {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 72px;
+      height: 58px;
+      background: linear-gradient(180deg, #fdba74, #fb923c);
+      border-radius: 36px 36px 28px 28px;
+    }
+    .fox-ear {
+      position: absolute;
+      top: -14px;
+      width: 0;
+      height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-bottom: 28px solid #ea580c;
+    }
+    .fox-ear.left { left: 4px; transform: rotate(-12deg); }
+    .fox-ear.right { right: 4px; transform: rotate(12deg); }
+    .fox-ear::after {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 10px;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 14px solid #ffedd5;
+    }
+    .fox-eye {
+      position: absolute;
+      top: 22px;
+      width: 12px;
+      height: 14px;
+      background: #0f172a;
+      border-radius: 50%;
+    }
+    .fox-eye.left { left: 16px; }
+    .fox-eye.right { right: 16px; }
+    .fox-eye::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+    }
+    .fox-nose {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 10px;
+      background: #0f172a;
+      border-radius: 50%;
+    }
+    .fox-snout {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 18px;
+      background: #ffedd5;
+      border-radius: 12px;
+    }
+    .fox-tail {
+      position: absolute;
+      right: -8px;
+      bottom: 28px;
+      width: 42px;
+      height: 22px;
+      background: linear-gradient(90deg, #ea580c, #fdba74);
+      border-radius: 20px;
+      transform-origin: left center;
+      animation: tail-wag 1.4s ease-in-out infinite;
+      z-index: -1;
+    }
+    .fox-tail::after {
+      content: "";
+      position: absolute;
+      right: -4px;
+      top: 2px;
+      width: 16px;
+      height: 18px;
+      background: #ffedd5;
+      border-radius: 50%;
+    }
+    @keyframes tail-wag {
+      0%, 100% { transform: rotate(-8deg); }
+      50% { transform: rotate(14deg); }
+    }
+    .fox-legs {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 18px;
+    }
+    .fox-leg {
+      width: 14px;
+      height: 18px;
+      background: #c2410c;
+      border-radius: 0 0 6px 6px;
+    }
+
+    /* ===== Game screen ===== */
+    .game-layout {
+      display: grid;
+      gap: 1rem;
+      flex: 1;
+    }
+    @media (min-width: 900px) {
+      .game-layout {
+        grid-template-columns: 1fr 1.15fr;
+        align-items: stretch;
+      }
+    }
+
+    .problem-panel { display: flex; flex-direction: column; gap: 1rem; }
+
+    .equation-board {
+      background: linear-gradient(145deg, #0ea5e9, #0284c7 50%, #0369a1);
+      border-radius: 24px;
+      padding: 1.25rem 1rem;
+      text-align: center;
+      color: white;
+      box-shadow:
+        0 12px 0 #0c4a6e,
+        0 20px 40px rgba(3, 105, 161, 0.35),
+        inset 0 2px 0 rgba(255,255,255,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .equation-board::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 2px dashed rgba(255,255,255,0.25);
+      border-radius: 18px;
+      pointer-events: none;
+    }
+    .eq-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0.85;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .equation {
+      font-family: "Nunito", sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.4rem, 8vw, 3.6rem);
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      min-height: 4.5rem;
+    }
+    .eq-num {
+      display: inline-grid;
+      place-items: center;
+      min-width: 1.3em;
+      padding: 0.1em 0.2em;
+      background: rgba(255,255,255,0.15);
+      border-radius: 14px;
+      animation: num-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    @keyframes num-in {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .eq-op { opacity: 0.95; }
+    .eq-answer {
+      min-width: 1.5em;
+      border-bottom: 5px solid #fde047;
+      color: #fde047;
+      background: rgba(0,0,0,0.15);
+    }
+    .eq-answer.filled { animation: answer-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    @keyframes answer-pop {
+      0% { transform: scale(0.6); }
+      60% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .story-box {
+      background: #fffbeb;
+      border: 3px solid #fcd34d;
+      border-radius: 18px;
+      padding: 0.9rem 1rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #92400e;
+      line-height: 1.45;
+      min-height: 4.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .story-emoji {
+      font-size: 2rem;
+      flex-shrink: 0;
+      animation: bounce-soft 2s ease-in-out infinite;
+    }
+    @keyframes bounce-soft {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .progress-wrap { margin-top: 0.25rem; }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #0369a1;
+      margin-bottom: 0.35rem;
+    }
+    .progress-bar {
+      height: 14px;
+      background: #e0f2fe;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 2px solid #bae6fd;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #34d399, #22c55e, #fbbf24);
+      border-radius: 999px;
+      transition: width 0.45s cubic-bezier(0.34, 1.2, 0.64, 1);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+    }
+
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+    @media (min-width: 500px) {
+      .answers { grid-template-columns: repeat(4, 1fr); }
+    }
+    .answer-btn {
+      appearance: none;
+      border: 3px solid #e2e8f0;
+      background: white;
+      border-radius: 20px;
+      font-family: "Nunito", sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.6rem, 4vw, 2rem);
+      color: #0c4a6e;
+      padding: 1rem 0.5rem;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #cbd5e1;
+      transition: transform 0.12s, box-shadow 0.12s, background 0.15s, border-color 0.15s;
+      min-height: 72px;
+    }
+    .answer-btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      border-color: #7dd3fc;
+      box-shadow: 0 9px 0 #38bdf8;
+    }
+    .answer-btn:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #cbd5e1;
+    }
+    .answer-btn.correct {
+      background: linear-gradient(180deg, #86efac, #22c55e);
+      border-color: #16a34a;
+      color: white;
+      box-shadow: 0 6px 0 #15803d;
+      animation: correct-pulse 0.5s ease;
+    }
+    .answer-btn.wrong {
+      background: linear-gradient(180deg, #fca5a5, #ef4444);
+      border-color: #dc2626;
+      color: white;
+      box-shadow: 0 6px 0 #b91c1c;
+      animation: shake 0.45s ease;
+    }
+    @keyframes correct-pulse {
+      0%, 100% { transform: scale(1); }
+      40% { transform: scale(1.08); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+
+    .feedback {
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.15rem;
+      min-height: 1.75rem;
+      color: #0c4a6e;
+      transition: color 0.2s;
+    }
+    .feedback.good { color: #15803d; }
+    .feedback.bad { color: #b91c1c; }
+
+    .visual-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 380px;
+    }
+    .visual-card h3 {
+      font-family: "Nunito", sans-serif;
+      font-weight: 800;
+      color: #0c4a6e;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      font-size: 1.15rem;
+    }
+    .count-legend {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #475569;
+    }
+    .legend-item { display: flex; align-items: center; gap: 0.35rem; }
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .dot-keep { background: #22c55e; }
+    .dot-take { background: #f97316; }
+
+    /* ===== Stars / confetti ===== */
+    .stars-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.35rem;
+      margin: 0.25rem 0 0.5rem;
+    }
+    .star-slot {
+      font-size: 1.5rem;
+      filter: grayscale(1);
+      opacity: 0.35;
+      transition: transform 0.3s, filter 0.3s, opacity 0.3s;
+    }
+    .star-slot.on {
+      filter: none;
+      opacity: 1;
+      animation: star-on 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes star-on {
+      from { transform: scale(0) rotate(-30deg); }
+      to { transform: scale(1) rotate(0); }
+    }
+
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* ===== Results ===== */
+    .results {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .results-card {
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+    }
+    .results-card h2 {
+      font-family: "Nunito", sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      color: #0c4a6e;
+      margin: 0.5rem 0;
+    }
+    .big-score {
+      font-family: "Nunito", sans-serif;
+      font-weight: 900;
+      font-size: clamp(3rem, 10vw, 4.5rem);
+      background: linear-gradient(135deg, #ea580c, #db2777);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      line-height: 1;
+      margin: 0.5rem 0;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+      margin: 1.25rem 0;
+    }
+    .stat {
+      background: #f0f9ff;
+      border-radius: 16px;
+      padding: 0.85rem 0.4rem;
+      border: 2px solid #e0f2fe;
+    }
+    .stat strong {
+      display: block;
+      font-family: "Nunito", sans-serif;
+      font-size: 1.5rem;
+      color: #0284c7;
+    }
+    .stat span {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #64748b;
+    }
+    .results-actions {
+      display: grid;
+      gap: 0.65rem;
+      margin-top: 0.5rem;
+    }
+
+    .trophy {
+      font-size: 4rem;
+      display: inline-block;
+      animation: trophy-bounce 1.2s ease-in-out infinite;
+      filter: drop-shadow(0 8px 12px rgba(234, 179, 8, 0.4));
+    }
+    @keyframes trophy-bounce {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-10px) rotate(5deg); }
+    }
+
+    /* Floating particles */
+    .float-particle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 40;
+      font-size: 1.5rem;
+      animation: float-up 1s ease forwards;
+    }
+    @keyframes float-up {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-80px) scale(1.4); opacity: 0; }
+    }
+
+    /* Number pad helper for accessibility */
+    .hint-btn-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+    }
+
+    /* Responsive owl shrink */
+    @media (max-width: 600px) {
+      .owl { width: 110px; height: 130px; }
+      .owl-body { width: 90px; height: 100px; }
+      .owl-face { width: 78px; height: 62px; }
+      .owl-eye { width: 24px; height: 24px; top: 18px; }
+      .owl-pupil { width: 11px; height: 11px; top: 6px; left: 6px; }
+      .fox { width: 90px; height: 100px; }
+      .fruit { width: 42px; height: 42px; }
+      .stage-wrap { min-height: 280px; }
+      .character-row { min-height: 220px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sky-decor" aria-hidden="true">
+    <div class="stars-layer"></div>
+    <div class="sun"></div>
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+    <div class="hill hill-1"></div>
+    <div class="hill hill-2"></div>
+  </div>
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app">
+    <!-- START -->
+    <section id="screen-start" class="screen active" aria-label="Welcome">
+      <div class="top-bar">
+        <div class="logo">
+          <div class="logo-badge" aria-hidden="true">−</div>
+          <div>
+            <h1>Subtraction Safari</h1>
+            <p>Learn to take away with friends!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero">
+        <div class="card hero-copy">
+          <h2>Ready to master <span>subtraction</span>?</h2>
+          <p>
+            Join Professor Hoot the owl and Finley the fox on a colorful math adventure!
+            Watch the fruit disappear, solve the puzzles, and collect stars.
+          </p>
+          <div class="feature-list">
+            <div class="feature">
+              <div class="feature-icon fi-1">🍎</div>
+              <div>Animated fruit shows every take-away</div>
+            </div>
+            <div class="feature">
+              <div class="feature-icon fi-2">⭐</div>
+              <div>Earn stars and climb through levels</div>
+            </div>
+            <div class="feature">
+              <div class="feature-icon fi-3">🦊</div>
+              <div>Cheerful characters celebrate your wins</div>
+            </div>
+          </div>
+
+          <p style="font-weight:700;color:#0c4a6e;margin-bottom:0.5rem;">Pick your challenge:</p>
+          <div class="difficulty" role="group" aria-label="Difficulty">
+            <button type="button" class="diff-btn selected" data-diff="easy">
+              Easy
+              <small>Numbers to 10</small>
+            </button>
+            <button type="button" class="diff-btn" data-diff="medium">
+              Medium
+              <small>Numbers to 20</small>
+            </button>
+            <button type="button" class="diff-btn" data-diff="hard">
+              Hard
+              <small>Numbers to 50</small>
+            </button>
+          </div>
+
+          <button type="button" class="btn btn-primary" id="btn-start">
+            🚀 Start Safari!
+          </button>
+        </div>
+
+        <div class="card stage-wrap" aria-hidden="true">
+          <div class="stage-ground"></div>
+          <div class="character-row" id="intro-characters">
+            <div class="owl happy" id="intro-owl">
+              <div class="speech show" id="intro-speech">Let's subtract together!</div>
+              <div class="owl-hat"></div>
+              <div class="owl-wing left"></div>
+              <div class="owl-wing right"></div>
+              <div class="owl-body">
+                <div class="owl-belly"></div>
+                <div class="owl-face">
+                  <div class="owl-brow left"></div>
+                  <div class="owl-brow right"></div>
+                  <div class="owl-eye left"><div class="owl-pupil"></div></div>
+                  <div class="owl-eye right"><div class="owl-pupil"></div></div>
+                  <div class="owl-beak"></div>
+                </div>
+              </div>
+              <div class="owl-feet"><div class="owl-foot"></div><div class="owl-foot"></div></div>
+            </div>
+            <div class="fruit-area" id="intro-fruits"></div>
+            <div class="fox" id="intro-fox">
+              <div class="fox-tail"></div>
+              <div class="fox-body"><div class="fox-belly"></div></div>
+              <div class="fox-head">
+                <div class="fox-ear left"></div>
+                <div class="fox-ear right"></div>
+                <div class="fox-snout"></div>
+                <div class="fox-nose"></div>
+                <div class="fox-eye left"></div>
+                <div class="fox-eye right"></div>
+              </div>
+              <div class="fox-legs"><div class="fox-leg"></div><div class="fox-leg"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section id="screen-game" class="screen" aria-label="Game">
+      <div class="top-bar">
+        <div class="logo">
+          <div class="logo-badge" aria-hidden="true">−</div>
+          <div>
+            <h1>Subtraction Safari</h1>
+            <p id="level-label">Level 1</p>
+          </div>
+        </div>
+        <div class="hud">
+          <div class="hud-pill" title="Score">⭐ Score: <strong id="hud-score">0</strong></div>
+          <div class="hud-pill" title="Streak">🔥 Streak: <strong id="hud-streak">0</strong></div>
+          <div class="hud-pill" title="Lives">❤️ <strong id="hud-lives">3</strong></div>
+          <button type="button" class="btn btn-ghost" id="btn-quit">Quit</button>
+        </div>
+      </div>
+
+      <div class="stars-row" id="stars-row" aria-label="Stars earned this round"></div>
+
+      <div class="game-layout">
+        <div class="problem-panel">
+          <div class="equation-board" aria-live="polite">
+            <div class="eq-label">Solve this</div>
+            <div class="equation" id="equation">
+              <span class="eq-num" id="eq-a">8</span>
+              <span class="eq-op">−</span>
+              <span class="eq-num" id="eq-b">3</span>
+              <span class="eq-op">=</span>
+              <span class="eq-num eq-answer" id="eq-ans">?</span>
+            </div>
+          </div>
+
+          <div class="story-box">
+            <span class="story-emoji" id="story-emoji">🍎</span>
+            <span id="story-text">Professor Hoot has 8 apples. Finley takes 3. How many are left?</span>
+          </div>
+
+          <div class="card" style="padding: 1rem;">
+            <div class="answers" id="answers" role="group" aria-label="Answer choices"></div>
+            <p class="feedback" id="feedback" aria-live="assertive"></p>
+            <div class="hint-btn-row">
+              <button type="button" class="btn btn-ghost" id="btn-hint">💡 Show hint</button>
+              <button type="button" class="btn btn-ghost" id="btn-next" hidden>Next →</button>
+            </div>
+          </div>
+
+          <div class="progress-wrap">
+            <div class="progress-meta">
+              <span>Round progress</span>
+              <span id="progress-text">1 / 10</span>
+            </div>
+            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="1">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card visual-card">
+          <h3>Watch the take-away!</h3>
+          <div class="stage-wrap" style="flex:1;">
+            <div class="stage-ground"></div>
+            <div class="character-row">
+              <div class="owl happy" id="game-owl">
+                <div class="speech" id="game-speech">You can do it!</div>
+                <div class="owl-hat"></div>
+                <div class="owl-wing left"></div>
+                <div class="owl-wing right"></div>
+                <div class="owl-body">
+                  <div class="owl-belly"></div>
+                  <div class="owl-face">
+                    <div class="owl-brow left"></div>
+                    <div class="owl-brow right"></div>
+                    <div class="owl-eye left"><div class="owl-pupil"></div></div>
+                    <div class="owl-eye right"><div class="owl-pupil"></div></div>
+                    <div class="owl-beak"></div>
+                  </div>
+                </div>
+                <div class="owl-feet"><div class="owl-foot"></div><div class="owl-foot"></div></div>
+              </div>
+              <div class="fruit-area" id="game-fruits" aria-hidden="true"></div>
+              <div class="fox" id="game-fox">
+                <div class="fox-tail"></div>
+                <div class="fox-body"><div class="fox-belly"></div></div>
+                <div class="fox-head">
+                  <div class="fox-ear left"></div>
+                  <div class="fox-ear right"></div>
+                  <div class="fox-snout"></div>
+                  <div class="fox-nose"></div>
+                  <div class="fox-eye left"></div>
+                  <div class="fox-eye right"></div>
+                </div>
+                <div class="fox-legs"><div class="fox-leg"></div><div class="fox-leg"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="count-legend">
+            <div class="legend-item"><span class="dot dot-keep"></span> Remaining</div>
+            <div class="legend-item"><span class="dot dot-take"></span> Taken away</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="screen-results" class="screen" aria-label="Results">
+      <div class="results">
+        <div class="card results-card">
+          <div class="trophy" id="result-trophy">🏆</div>
+          <div class="stage-wrap" style="min-height:160px;margin-bottom:0.5rem;" aria-hidden="true">
+            <div class="character-row" style="min-height:150px;">
+              <div class="owl celebrate happy" id="result-owl" style="transform:scale(0.85);">
+                <div class="owl-hat"></div>
+                <div class="owl-wing left"></div>
+                <div class="owl-wing right"></div>
+                <div class="owl-body">
+                  <div class="owl-belly"></div>
+                  <div class="owl-face">
+                    <div class="owl-brow left"></div>
+                    <div class="owl-brow right"></div>
+                    <div class="owl-eye left"><div class="owl-pupil"></div></div>
+                    <div class="owl-eye right"><div class="owl-pupil"></div></div>
+                    <div class="owl-beak"></div>
+                  </div>
+                </div>
+                <div class="owl-feet"><div class="owl-foot"></div><div class="owl-foot"></div></div>
+              </div>
+              <div class="fox jump" id="result-fox" style="transform:scale(0.85);">
+                <div class="fox-tail"></div>
+                <div class="fox-body"><div class="fox-belly"></div></div>
+                <div class="fox-head">
+                  <div class="fox-ear left"></div>
+                  <div class="fox-ear right"></div>
+                  <div class="fox-snout"></div>
+                  <div class="fox-nose"></div>
+                  <div class="fox-eye left"></div>
+                  <div class="fox-eye right"></div>
+                </div>
+                <div class="fox-legs"><div class="fox-leg"></div><div class="fox-leg"></div></div>
+              </div>
+            </div>
+          </div>
+          <h2 id="result-title">Amazing work!</h2>
+          <p id="result-message" style="color:#475569;font-weight:600;">You completed the safari!</p>
+          <div class="big-score" id="result-score">0</div>
+          <p style="font-weight:700;color:#ea580c;">total points</p>
+          <div class="stat-grid">
+            <div class="stat"><strong id="stat-correct">0</strong><span>Correct</span></div>
+            <div class="stat"><strong id="stat-streak">0</strong><span>Best streak</span></div>
+            <div class="stat"><strong id="stat-stars">0</strong><span>Stars</span></div>
+          </div>
+          <div class="results-actions">
+            <button type="button" class="btn btn-primary" id="btn-play-again">🔄 Play Again</button>
+            <button type="button" class="btn btn-secondary" id="btn-home">🏠 Back Home</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    /* ========== Audio (Web Audio API — no external files) ========== */
+    const AudioFX = (() => {
+      let ctx;
+      const ensure = () => {
+        if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (ctx.state === "suspended") ctx.resume();
+        return ctx;
+      };
+      const tone = (freq, dur, type = "sine", gain = 0.08, delay = 0) => {
+        try {
+          const c = ensure();
+          const t0 = c.currentTime + delay;
+          const o = c.createOscillator();
+          const g = c.createGain();
+          o.type = type;
+          o.frequency.setValueAtTime(freq, t0);
+          g.gain.setValueAtTime(0.0001, t0);
+          g.gain.exponentialRampToValueAtTime(gain, t0 + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+          o.connect(g);
+          g.connect(c.destination);
+          o.start(t0);
+          o.stop(t0 + dur + 0.02);
+        } catch (_) {}
+      };
+      return {
+        correct() {
+          tone(523.25, 0.12, "triangle", 0.09);
+          tone(659.25, 0.12, "triangle", 0.09, 0.1);
+          tone(783.99, 0.2, "triangle", 0.1, 0.2);
+        },
+        wrong() {
+          tone(220, 0.18, "sawtooth", 0.05);
+          tone(180, 0.25, "sawtooth", 0.04, 0.12);
+        },
+        click() { tone(660, 0.06, "square", 0.03); },
+        whoosh() {
+          tone(400, 0.08, "sine", 0.04);
+          tone(300, 0.1, "sine", 0.03, 0.06);
+        },
+        win() {
+          [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.18, "triangle", 0.09, i * 0.12));
+        },
+        star() { tone(880, 0.1, "sine", 0.06); tone(1320, 0.15, "sine", 0.05, 0.08); }
+      };
+    })();
+
+    /* ========== Confetti ========== */
+    const Confetti = (() => {
+      const canvas = document.getElementById("confetti-canvas");
+      const ctx = canvas.getContext("2d");
+      let pieces = [];
+      let raf = null;
+
+      const resize = () => {
+        canvas.width = window.innerWidth * devicePixelRatio;
+        canvas.height = window.innerHeight * devicePixelRatio;
+        ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+      };
+      window.addEventListener("resize", resize);
+      resize();
+
+      const colors = ["#f97316", "#eab308", "#22c55e", "#3b82f6", "#a855f7", "#ec4899", "#f43f5e"];
+
+      function burst(x = innerWidth / 2, y = innerHeight / 3, n = 80) {
+        for (let i = 0; i < n; i++) {
+          const angle = (Math.PI * 2 * i) / n + Math.random() * 0.4;
+          const speed = 4 + Math.random() * 8;
+          pieces.push({
+            x, y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 4,
+            w: 6 + Math.random() * 8,
+            h: 4 + Math.random() * 6,
+            color: colors[i % colors.length],
+            rot: Math.random() * Math.PI,
+            vr: (Math.random() - 0.5) * 0.3,
+            life: 1
+          });
+        }
+        if (!raf) tick();
+      }
+
+      function tick() {
+        ctx.clearRect(0, 0, innerWidth, innerHeight);
+        pieces = pieces.filter((p) => p.life > 0);
+        for (const p of pieces) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.18;
+          p.vx *= 0.99;
+          p.rot += p.vr;
+          p.life -= 0.012;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.globalAlpha = Math.max(0, p.life);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        }
+        if (pieces.length) raf = requestAnimationFrame(tick);
+        else { raf = null; ctx.clearRect(0, 0, innerWidth, innerHeight); }
+      }
+
+      return { burst };
+    })();
+
+    /* ========== Fruit SVGs ========== */
+    const FRUITS = [
+      { name: "apples", emoji: "🍎", color: "#ef4444", story: "apples" },
+      { name: "oranges", emoji: "🍊", color: "#f97316", story: "oranges" },
+      { name: "lemons", emoji: "🍋", color: "#eab308", story: "lemons" },
+      { name: "limes", emoji: "🟢", color: "#84cc16", story: "limes" },
+      { name: "berries", emoji: "🫐", color: "#6366f1", story: "berries" },
+      { name: "grapes", emoji: "🍇", color: "#a855f7", story: "grapes" },
+      { name: "peaches", emoji: "🍑", color: "#fb7185", story: "peaches" },
+      { name: "stars", emoji: "⭐", color: "#fbbf24", story: "golden stars" }
+    ];
+
+    function fruitSVG(color, face = true) {
+      const blush = face
+        ? `<circle cx="22" cy="30" r="3.2" fill="#fb7185" opacity="0.45"/>
+           <circle cx="42" cy="30" r="3.2" fill="#fb7185" opacity="0.45"/>
+           <circle cx="26" cy="26" r="2.2" fill="#0f172a"/>
+           <circle cx="38" cy="26" r="2.2" fill="#0f172a"/>
+           <circle cx="26.7" cy="25.3" r="0.7" fill="#fff"/>
+           <circle cx="38.7" cy="25.3" r="0.7" fill="#fff"/>
+           <path d="M28 34 Q32 38 36 34" stroke="#0f172a" stroke-width="1.6" fill="none" stroke-linecap="round"/>`
+        : "";
+      return `
+        <svg class="fruit-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <radialGradient id="g${color.replace("#","")}" cx="35%" cy="30%" r="65%">
+              <stop offset="0%" stop-color="#fff" stop-opacity="0.55"/>
+              <stop offset="45%" stop-color="${color}"/>
+              <stop offset="100%" stop-color="${shade(color, -35)}"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="32" cy="58" rx="14" ry="3.5" fill="rgba(0,0,0,0.12)"/>
+          <circle cx="32" cy="34" r="22" fill="url(#g${color.replace("#","")})"/>
+          <path d="M32 14 C32 14 28 6 34 4 C36 12 32 14 32 14" fill="${shade(color, -50)}"/>
+          <ellipse cx="38" cy="10" rx="8" ry="4" fill="#22c55e" transform="rotate(25 38 10)"/>
+          ${blush}
+        </svg>`;
+    }
+
+    function shade(hex, amt) {
+      const n = parseInt(hex.slice(1), 16);
+      let r = Math.min(255, Math.max(0, (n >> 16) + amt));
+      let g = Math.min(255, Math.max(0, ((n >> 8) & 0xff) + amt));
+      let b = Math.min(255, Math.max(0, (n & 0xff) + amt));
+      return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
+    }
+
+    /* ========== Game state ========== */
+    const TOTAL_ROUNDS = 10;
+    const state = {
+      difficulty: "easy",
+      score: 0,
+      streak: 0,
+      bestStreak: 0,
+      lives: 3,
+      round: 0,
+      correct: 0,
+      stars: 0,
+      a: 0,
+      b: 0,
+      answer: 0,
+      fruit: FRUITS[0],
+      locked: false,
+      hintUsed: false
+    };
+
+    const DIFF = {
+      easy:   { max: 10, label: "Easy Trail" },
+      medium: { max: 20, label: "Medium Path" },
+      hard:   { max: 50, label: "Hard Summit" }
+    };
+
+    const PRAISE = [
+      "Hoot hoot! Perfect!",
+      "Brilliant brain power!",
+      "You nailed it!",
+      "Safari star!",
+      "Math champion!",
+      "So smart!",
+      "Fantastic take-away!"
+    ];
+    const ENCOURAGE = [
+      "Almost! Try again!",
+      "Count carefully!",
+      "You can do this!",
+      "Take another look!",
+      "Think it through!"
+    ];
+
+    /* ========== DOM refs ========== */
+    const $ = (id) => document.getElementById(id);
+    const screens = {
+      start: $("screen-start"),
+      game: $("screen-game"),
+      results: $("screen-results")
+    };
+
+    function showScreen(name) {
+      Object.values(screens).forEach((s) => s.classList.remove("active"));
+      screens[name].classList.add("active");
+    }
+
+    /* ========== Characters helpers ========== */
+    function setOwlMood(owl, mood) {
+      owl.classList.remove("happy", "sad", "celebrate", "talking", "blink");
+      if (mood) owl.classList.add(mood);
+    }
+
+    function speak(el, text, ms = 2200) {
+      el.textContent = text;
+      el.classList.add("show");
+      clearTimeout(el._t);
+      el._t = setTimeout(() => el.classList.remove("show"), ms);
+    }
+
+    function blinkLoop(owl) {
+      const blink = () => {
+        if (!owl.isConnected) return;
+        owl.classList.add("blink");
+        setTimeout(() => owl.classList.remove("blink"), 140);
+        setTimeout(blink, 2200 + Math.random() * 3000);
+      };
+      setTimeout(blink, 1000 + Math.random() * 2000);
+    }
+
+    function eyeTrack(owl) {
+      const pupils = owl.querySelectorAll(".owl-pupil");
+      window.addEventListener("mousemove", (e) => {
+        if (!owl.isConnected) return;
+        const rect = owl.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 3;
+        const dx = Math.max(-1, Math.min(1, (e.clientX - cx) / 120));
+        const dy = Math.max(-1, Math.min(1, (e.clientY - cy) / 80));
+        pupils.forEach((p) => {
+          p.style.transform = `translate(${dx * 5}px, ${dy * 4}px)`;
+        });
+      });
+    }
+
+    /* ========== Render fruits ========== */
+    function renderFruits(container, total, takeAway = 0, animateTake = false) {
+      container.innerHTML = "";
+      const color = state.fruit.color;
+      const maxShow = Math.min(total, 24);
+      for (let i = 0; i < maxShow; i++) {
+        const div = document.createElement("div");
+        div.className = "fruit";
+        div.style.animationDelay = `${i * 0.04}s`;
+        div.innerHTML = fruitSVG(color);
+        div.dataset.idx = i;
+        container.appendChild(div);
+      }
+      if (total > 24) {
+        const more = document.createElement("div");
+        more.style.cssText = "font-weight:800;color:#0c4a6e;align-self:center;padding:0.5rem;";
+        more.textContent = `+${total - 24}`;
+        container.appendChild(more);
+      }
+
+      if (animateTake && takeAway > 0) {
+        const nodes = [...container.querySelectorAll(".fruit")];
+        const takeCount = Math.min(takeAway, nodes.length);
+        // mark last N as leaving
+        for (let i = 0; i < takeCount; i++) {
+          const node = nodes[nodes.length - 1 - i];
+          setTimeout(() => {
+            node.classList.add("leaving");
+            AudioFX.whoosh();
+          }, 280 + i * 120);
+          setTimeout(() => {
+            node.classList.remove("leaving");
+            node.classList.add("gone");
+          }, 280 + i * 120 + 520);
+        }
+      }
+    }
+
+    /* ========== Problem generation ========== */
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateProblem() {
+      const max = DIFF[state.difficulty].max;
+      let a, b;
+      if (state.difficulty === "easy") {
+        a = randInt(2, max);
+        b = randInt(1, a);
+      } else if (state.difficulty === "medium") {
+        a = randInt(5, max);
+        b = randInt(1, Math.min(a, 12));
+      } else {
+        a = randInt(10, max);
+        b = randInt(1, Math.min(a, 25));
+      }
+      // occasionally force slightly harder near end
+      if (state.round > 6 && state.difficulty !== "easy") {
+        b = randInt(Math.max(1, Math.floor(a * 0.3)), Math.min(a - 1, Math.floor(a * 0.7) || 1));
+      }
+      state.a = a;
+      state.b = b;
+      state.answer = a - b;
+      state.fruit = FRUITS[randInt(0, FRUITS.length - 1)];
+      state.hintUsed = false;
+      state.locked = false;
+    }
+
+    function answerChoices(correct) {
+      const set = new Set([correct]);
+      const max = DIFF[state.difficulty].max;
+      while (set.size < 4) {
+        let n;
+        const r = Math.random();
+        if (r < 0.35) n = correct + randInt(1, 3) * (Math.random() < 0.5 ? 1 : -1);
+        else if (r < 0.6) n = state.a + state.b; // common addition mistake
+        else if (r < 0.75) n = Math.abs(state.b - state.a);
+        else n = randInt(0, max);
+        if (n >= 0 && n !== correct) set.add(n);
+      }
+      return [...set].sort(() => Math.random() - 0.5);
+    }
+
+    /* ========== UI update ========== */
+    function updateHUD() {
+      $("hud-score").textContent = state.score;
+      $("hud-streak").textContent = state.streak;
+      $("hud-lives").textContent = state.lives;
+      $("level-label").textContent = `${DIFF[state.difficulty].label} · Q${state.round}/${TOTAL_ROUNDS}`;
+      $("progress-text").textContent = `${state.round} / ${TOTAL_ROUNDS}`;
+      const pct = ((state.round - 1) / TOTAL_ROUNDS) * 100;
+      $("progress-fill").style.width = `${Math.max(0, pct)}%`;
+      $("stars-row").innerHTML = Array.from({ length: TOTAL_ROUNDS }, (_, i) =>
+        `<span class="star-slot ${i < state.stars ? "on" : ""}" aria-hidden="true">⭐</span>`
+      ).join("");
+    }
+
+    function showProblem(animateVisual = true) {
+      generateProblem();
+      updateHUD();
+
+      $("eq-a").textContent = state.a;
+      $("eq-b").textContent = state.b;
+      const ans = $("eq-ans");
+      ans.textContent = "?";
+      ans.classList.remove("filled");
+
+      // re-trigger number animation
+      document.querySelectorAll("#equation .eq-num").forEach((el) => {
+        el.style.animation = "none";
+        void el.offsetWidth;
+        el.style.animation = "";
+      });
+
+      $("story-emoji").textContent = state.fruit.emoji;
+      $("story-text").textContent =
+        `Professor Hoot has ${state.a} ${state.fruit.story}. Finley takes away ${state.b}. How many are left?`;
+
+      $("feedback").textContent = "";
+      $("feedback").className = "feedback";
+      $("btn-next").hidden = true;
+      $("btn-hint").disabled = false;
+
+      const owl = $("game-owl");
+      setOwlMood(owl, "happy");
+      speak($("game-speech"), pick(PRAISE.length ? ["Count with me!", "You've got this!", "Ready?"] : ["Go!"]), 1800);
+
+      const fox = $("game-fox");
+      fox.classList.remove("jump");
+      void fox.offsetWidth;
+      fox.classList.add("jump");
+      setTimeout(() => fox.classList.remove("jump"), 600);
+
+      // Show all fruits first, then animate take-away
+      renderFruits($("game-fruits"), state.a, 0, false);
+      if (animateVisual) {
+        setTimeout(() => {
+          renderFruits($("game-fruits"), state.a, state.b, true);
+        }, 600);
+      }
+
+      const choices = answerChoices(state.answer);
+      const box = $("answers");
+      box.innerHTML = "";
+      choices.forEach((n) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "answer-btn";
+        btn.textContent = n;
+        btn.setAttribute("aria-label", `Answer ${n}`);
+        btn.addEventListener("click", () => onAnswer(n, btn));
+        box.appendChild(btn);
+      });
+    }
+
+    function pick(arr) {
+      return arr[randInt(0, arr.length - 1)];
+    }
+
+    function floatEmoji(emoji, x, y) {
+      const el = document.createElement("div");
+      el.className = "float-particle";
+      el.textContent = emoji;
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1000);
+    }
+
+    function onAnswer(n, btn) {
+      if (state.locked) return;
+      state.locked = true;
+      AudioFX.click();
+
+      const buttons = [...document.querySelectorAll(".answer-btn")];
+      buttons.forEach((b) => (b.disabled = true));
+
+      const ans = $("eq-ans");
+      const owl = $("game-owl");
+      const fox = $("game-fox");
+
+      if (n === state.answer) {
+        btn.classList.add("correct");
+        ans.textContent = n;
+        ans.classList.add("filled");
+        state.correct++;
+        state.streak++;
+        state.bestStreak = Math.max(state.bestStreak, state.streak);
+        const bonus = state.hintUsed ? 5 : 10;
+        const streakBonus = Math.min(state.streak, 5) * 2;
+        state.score += bonus + streakBonus;
+        state.stars++;
+        state.lives = Math.min(5, state.lives); // cap
+
+        $("feedback").textContent = `${pick(PRAISE)} +${bonus + streakBonus} points`;
+        $("feedback").className = "feedback good";
+        setOwlMood(owl, "celebrate");
+        speak($("game-speech"), pick(PRAISE), 2000);
+        fox.classList.add("jump");
+        AudioFX.correct();
+        AudioFX.star();
+        Confetti.burst(innerWidth * 0.5, innerHeight * 0.35, 55);
+        const r = btn.getBoundingClientRect();
+        floatEmoji("⭐", r.left + r.width / 2, r.top);
+
+        // ensure visual shows remaining
+        setTimeout(() => {
+          renderFruits($("game-fruits"), state.answer, 0, false);
+        }, 200);
+
+        updateHUD();
+        $("progress-fill").style.width = `${(state.round / TOTAL_ROUNDS) * 100}%`;
+        $("btn-next").hidden = false;
+
+        setTimeout(() => {
+          if (state.round >= TOTAL_ROUNDS || state.lives <= 0) endGame();
+        }, 400);
+      } else {
+        btn.classList.add("wrong");
+        state.streak = 0;
+        state.lives--;
+        $("feedback").textContent = `${pick(ENCOURAGE)} The answer is ${state.answer}.`;
+        $("feedback").className = "feedback bad";
+        setOwlMood(owl, "sad");
+        speak($("game-speech"), pick(ENCOURAGE), 2000);
+        AudioFX.wrong();
+        updateHUD();
+
+        // reveal correct button
+        buttons.forEach((b) => {
+          if (Number(b.textContent) === state.answer) b.classList.add("correct");
+        });
+        ans.textContent = state.answer;
+        ans.classList.add("filled");
+
+        // show remaining fruits clearly
+        renderFruits($("game-fruits"), state.a, state.b, true);
+
+        $("btn-next").hidden = false;
+
+        if (state.lives <= 0) {
+          setTimeout(endGame, 1200);
+        }
+      }
+    }
+
+    function nextRound() {
+      if (state.round >= TOTAL_ROUNDS || state.lives <= 0) {
+        endGame();
+        return;
+      }
+      state.round++;
+      setOwlMood($("game-owl"), "happy");
+      showProblem(true);
+    }
+
+    function startGame() {
+      state.score = 0;
+      state.streak = 0;
+      state.bestStreak = 0;
+      state.lives = 3;
+      state.round = 1;
+      state.correct = 0;
+      state.stars = 0;
+      showScreen("game");
+      showProblem(true);
+      AudioFX.click();
+    }
+
+    function endGame() {
+      showScreen("results");
+      const ratio = state.correct / TOTAL_ROUNDS;
+      let title, msg, trophy;
+      if (state.lives <= 0 && state.round < TOTAL_ROUNDS) {
+        title = "Keep practicing!";
+        msg = "Finley believes in you. Try another safari!";
+        trophy = "💪";
+        setOwlMood($("result-owl"), "happy");
+      } else if (ratio >= 0.9) {
+        title = "Safari Superstar!";
+        msg = "Professor Hoot is so proud of you!";
+        trophy = "🏆";
+        setOwlMood($("result-owl"), "celebrate");
+        AudioFX.win();
+        Confetti.burst(innerWidth / 2, innerHeight / 3, 120);
+      } else if (ratio >= 0.7) {
+        title = "Great explorer!";
+        msg = "You really understand take-away!";
+        trophy = "🌟";
+        setOwlMood($("result-owl"), "celebrate");
+        AudioFX.win();
+        Confetti.burst(innerWidth / 2, innerHeight / 3, 70);
+      } else if (ratio >= 0.4) {
+        title = "Nice effort!";
+        msg = "Practice makes progress. Go again?";
+        trophy = "🌈";
+        setOwlMood($("result-owl"), "happy");
+      } else {
+        title = "Good start!";
+        msg = "Watch the fruit carefully and try again!";
+        trophy = "🍀";
+        setOwlMood($("result-owl"), "happy");
+      }
+
+      $("result-title").textContent = title;
+      $("result-message").textContent = msg;
+      $("result-trophy").textContent = trophy;
+      $("result-score").textContent = state.score;
+      $("stat-correct").textContent = `${state.correct}/${TOTAL_ROUNDS}`;
+      $("stat-streak").textContent = state.bestStreak;
+      $("stat-stars").textContent = state.stars;
+
+      const fox = $("result-fox");
+      fox.classList.remove("jump");
+      void fox.offsetWidth;
+      fox.classList.add("jump");
+    }
+
+    function showHint() {
+      if (state.locked || state.hintUsed) return;
+      state.hintUsed = true;
+      $("btn-hint").disabled = true;
+      AudioFX.click();
+      const owl = $("game-owl");
+      setOwlMood(owl, "talking");
+      speak(
+        $("game-speech"),
+        `Start at ${state.a}, count back ${state.b}!`,
+        3000
+      );
+      $("feedback").textContent = `Hint: ${state.a} − ${state.b} means start with ${state.a} and take away ${state.b}.`;
+      $("feedback").className = "feedback";
+
+      // re-play take away animation
+      renderFruits($("game-fruits"), state.a, state.b, true);
+      setTimeout(() => setOwlMood(owl, "happy"), 1000);
+    }
+
+    /* ========== Intro fruits animation ========== */
+    function playIntro() {
+      state.fruit = FRUITS[0];
+      renderFruits($("intro-fruits"), 6, 0, false);
+      setInterval(() => {
+        if (!screens.start.classList.contains("active")) return;
+        state.fruit = FRUITS[randInt(0, FRUITS.length - 1)];
+        const total = randInt(5, 8);
+        const take = randInt(1, 3);
+        renderFruits($("intro-fruits"), total, 0, false);
+        setTimeout(() => renderFruits($("intro-fruits"), total, take, true), 700);
+        const owl = $("intro-owl");
+        setOwlMood(owl, "talking");
+        speak($("intro-speech"), `${total} − ${take} = ${total - take}`, 2500);
+        setTimeout(() => setOwlMood(owl, "happy"), 1200);
+        const fox = $("intro-fox");
+        fox.classList.remove("jump");
+        void fox.offsetWidth;
+        fox.classList.add("jump");
+      }, 4500);
+    }
+
+    /* ========== Events ========== */
+    document.querySelectorAll(".diff-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".diff-btn").forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        state.difficulty = btn.dataset.diff;
+        AudioFX.click();
+      });
+    });
+
+    $("btn-start").addEventListener("click", startGame);
+    $("btn-next").addEventListener("click", () => {
+      AudioFX.click();
+      nextRound();
+    });
+    $("btn-hint").addEventListener("click", showHint);
+    $("btn-quit").addEventListener("click", () => {
+      if (confirm("Leave the safari and return home?")) {
+        showScreen("start");
+        AudioFX.click();
+      }
+    });
+    $("btn-play-again").addEventListener("click", startGame);
+    $("btn-home").addEventListener("click", () => {
+      showScreen("start");
+      AudioFX.click();
+    });
+
+    // Keyboard: 1-4 select answers, Enter next
+    document.addEventListener("keydown", (e) => {
+      if (!screens.game.classList.contains("active")) return;
+      if (e.key >= "1" && e.key <= "4") {
+        const buttons = document.querySelectorAll(".answer-btn");
+        const idx = Number(e.key) - 1;
+        if (buttons[idx] && !buttons[idx].disabled) buttons[idx].click();
+      }
+      if (e.key === "Enter" && !$("btn-next").hidden) $("btn-next").click();
+      if (e.key === "h" || e.key === "H") showHint();
+    });
+
+    // Init character polish
+    ["intro-owl", "game-owl", "result-owl"].forEach((id) => {
+      const owl = $(id);
+      if (owl) {
+        blinkLoop(owl);
+        eyeTrack(owl);
+      }
+    });
+
+    playIntro();
+  </script>
+</body>
+</html>
