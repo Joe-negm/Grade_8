@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equation Masters — Linear Equations Battle</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style>
+  body {
+    font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .floating {
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+  }
+  .bouncing {
+    animation: bounce 1s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+  .pulse-btn {
+    animation: pulseBtn 2s ease-in-out infinite;
+  }
+  @keyframes pulseBtn {
+    0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
+  }
+  .glass {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .card-3d {
+    background: linear-gradient(145deg, #ffffff, #f0f0ff);
+    box-shadow: 20px 20px 60px rgba(0,0,0,0.3), -5px -5px 20px rgba(255,255,255,0.5);
+    border-radius: 25px;
+  }
+  .btn-3d {
+    background: linear-gradient(145deg, #ff6b6b, #ee5a6f);
+    box-shadow: 0 6px 0 #c44569, 0 8px 20px rgba(0,0,0,0.3);
+    transition: all 0.15s;
+    color: white;
+    font-weight: bold;
+  }
+  .btn-3d:hover {
+    transform: translateY(2px);
+    box-shadow: 0 4px 0 #c44569, 0 6px 15px rgba(0,0,0,0.3);
+  }
+  .btn-3d:active {
+    transform: translateY(6px);
+    box-shadow: 0 0 0 #c44569, 0 2px 5px rgba(0,0,0,0.3);
+  }
+  .btn-blue {
+    background: linear-gradient(145deg, #4facfe, #00c6fb);
+    box-shadow: 0 6px 0 #0891b2, 0 8px 20px rgba(0,0,0,0.3);
+  }
+  .btn-blue:hover { box-shadow: 0 4px 0 #0891b2, 0 6px 15px rgba(0,0,0,0.3); }
+  .btn-blue:active { box-shadow: 0 0 0 #0891b2, 0 2px 5px rgba(0,0,0,0.3); }
+  .btn-green {
+    background: linear-gradient(145deg, #43e97b, #38f9d7);
+    box-shadow: 0 6px 0 #059669, 0 8px 20px rgba(0,0,0,0.3);
+  }
+  .btn-green:hover { box-shadow: 0 4px 0 #059669, 0 6px 15px rgba(0,0,0,0.3); }
+  .btn-green:active { box-shadow: 0 0 0 #059669, 0 2px 5px rgba(0,0,0,0.3); }
+  .btn-purple {
+    background: linear-gradient(145deg, #a18cd1, #fbc2eb);
+    box-shadow: 0 6px 0 #7c3aed, 0 8px 20px rgba(0,0,0,0.3);
+  }
+  .btn-purple:hover { box-shadow: 0 4px 0 #7c3aed, 0 6px 15px rgba(0,0,0,0.3); }
+  .btn-purple:active { box-shadow: 0 0 0 #7c3aed, 0 2px 5px rgba(0,0,0,0.3); }
+  .btn-orange {
+    background: linear-gradient(145deg, #fa709a, #fee140);
+    box-shadow: 0 6px 0 #ea580c, 0 8px 20px rgba(0,0,0,0.3);
+  }
+  .btn-orange:hover { box-shadow: 0 4px 0 #ea580c, 0 6px 15px rgba(0,0,0,0.3); }
+  .btn-orange:active { box-shadow: 0 0 0 #ea580c, 0 2px 5px rgba(0,0,0,0.3); }
+
+  .equation-box {
+    font-family: 'Cambria Math', 'Georgia', serif;
+    font-size: 3rem;
+    font-weight: bold;
+    color: #2d3748;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  }
+  .character {
+    width: 140px;
+    height: 140px;
+    display: inline-block;
+  }
+  .correct-anim {
+    animation: correctFlash 0.8s ease-out;
+  }
+  @keyframes correctFlash {
+    0% { transform: scale(1); background-color: white; }
+    50% { transform: scale(1.1); background-color: #86efac; }
+    100% { transform: scale(1); background-color: white; }
+  }
+  .wrong-anim {
+    animation: wrongShake 0.6s ease-out;
+  }
+  @keyframes wrongShake {
+    0%, 100% { transform: translateX(0); background-color: white; }
+    20%, 60% { transform: translateX(-15px); background-color: #fca5a5; }
+    40%, 80% { transform: translateX(15px); background-color: #fca5a5; }
+  }
+  .timer-bar {
+    height: 20px;
+    background: linear-gradient(90deg, #43e97b, #fee140, #ff6b6b);
+    border-radius: 10px;
+    transition: width 1s linear;
+  }
+  .confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    pointer-events: none;
+    z-index: 1000;
+  }
+  .star {
+    display: inline-block;
+    color: gold;
+    font-size: 2rem;
+    animation: starSpin 1s ease-in-out infinite;
+  }
+  @keyframes starSpin {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.3); }
+  }
+  .hidden-screen { display: none; }
+  .thinking {
+    animation: thinking 0.5s ease-in-out infinite alternate;
+  }
+  @keyframes thinking {
+    from { transform: rotate(-5deg); }
+    to { transform: rotate(5deg); }
+  }
+  .glow {
+    text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.5), 0 0 30px #f093fb;
+  }
+  .player-active {
+    outline: 5px solid #fbbf24;
+    animation: activeGlow 1.5s ease-in-out infinite;
+  }
+  @keyframes activeGlow {
+    0%, 100% { outline-color: #fbbf24; box-shadow: 0 0 20px #fbbf24; }
+    50% { outline-color: #f59e0b; box-shadow: 0 0 30px #f59e0b; }
+  }
+  input.answer-input {
+    font-size: 2.5rem;
+    text-align: center;
+    border: 4px solid #667eea;
+    border-radius: 15px;
+    padding: 10px 20px;
+    width: 200px;
+    font-weight: bold;
+    color: #2d3748;
+    outline: none;
+    transition: all 0.3s;
+  }
+  input.answer-input:focus {
+    border-color: #f093fb;
+    box-shadow: 0 0 20px rgba(240, 147, 251, 0.5);
+    transform: scale(1.05);
+  }
+  .step-hint {
+    background: rgba(255, 255, 200, 0.95);
+    border-left: 5px solid #fbbf24;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    color: #78350f;
+    font-size: 1rem;
+  }
+  .emoji-choice {
+    background: white;
+    border: 3px solid rgba(124, 58, 237, 0.25);
+    border-radius: 14px;
+    box-shadow: 0 4px 0 rgba(124, 58, 237, 0.25);
+    font-size: 1.7rem;
+    line-height: 1;
+    padding: 8px 10px;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+  .emoji-choice:hover,
+  .emoji-choice:focus {
+    border-color: #fbbf24;
+    box-shadow: 0 2px 0 rgba(124, 58, 237, 0.25), 0 0 18px rgba(251, 191, 36, 0.65);
+    transform: translateY(2px) scale(1.08);
+    outline: none;
+  }
+  .setup-emoji {
+    font-size: 1.25rem;
+    padding: 6px 8px;
+  }
+  .emoji-bubble {
+    filter: drop-shadow(0 18px 30px rgba(0,0,0,0.35));
+    font-size: clamp(4rem, 14vw, 9rem);
+    left: 50%;
+    pointer-events: none;
+    position: fixed;
+    top: 42%;
+    transform: translate(-50%, -50%);
+    z-index: 900;
+  }
+  @keyframes emojiPop {
+    0% { opacity: 0; transform: translate(-50%, 0) scale(0.35) rotate(-12deg); }
+    25% { opacity: 1; transform: translate(-50%, -45%) scale(1.15) rotate(6deg); }
+    75% { opacity: 1; transform: translate(-50%, -85%) scale(1) rotate(-4deg); }
+    100% { opacity: 0; transform: translate(-50%, -145%) scale(1.25) rotate(12deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= HOME SCREEN ================= -->
+<div id="homeScreen" class="min-h-screen flex flex-col items-center justify-center p-4">
+  <div class="text-center mb-8">
+    <h1 class="text-6xl md:text-7xl font-black text-white glow mb-4 floating">🎓 Equation Masters 🎓</h1>
+    <p class="text-2xl text-white font-bold">Linear Equations Battle — Grade 8</p>
+    <p class="text-lg text-white/90 mt-2">Solve equations, earn points, become the champion!</p>
+  </div>
+
+  <!-- Animated characters row -->
+  <div class="flex flex-wrap justify-center gap-6 mb-8">
+    <div class="character bouncing" style="animation-delay: 0s;">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#ff6b6b" stroke="#c44569" stroke-width="3"/>
+        <circle cx="35" cy="42" r="6" fill="white"/><circle cx="65" cy="42" r="6" fill="white"/>
+        <circle cx="35" cy="42" r="3" fill="#2d3748"/><circle cx="65" cy="42" r="3" fill="#2d3748"/>
+        <path d="M 30 65 Q 50 80 70 65" stroke="#2d3748" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <text x="50" y="25" text-anchor="middle" font-size="12" fill="white" font-weight="bold">X</text>
+      </svg>
+    </div>
+    <div class="character bouncing" style="animation-delay: 0.2s;">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#4facfe" stroke="#0891b2" stroke-width="3"/>
+        <circle cx="35" cy="42" r="6" fill="white"/><circle cx="65" cy="42" r="6" fill="white"/>
+        <circle cx="35" cy="42" r="3" fill="#2d3748"/><circle cx="65" cy="42" r="3" fill="#2d3748"/>
+        <path d="M 30 65 Q 50 80 70 65" stroke="#2d3748" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <text x="50" y="25" text-anchor="middle" font-size="12" fill="white" font-weight="bold">=</text>
+      </svg>
+    </div>
+    <div class="character bouncing" style="animation-delay: 0.4s;">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#43e97b" stroke="#059669" stroke-width="3"/>
+        <circle cx="35" cy="42" r="6" fill="white"/><circle cx="65" cy="42" r="6" fill="white"/>
+        <circle cx="35" cy="42" r="3" fill="#2d3748"/><circle cx="65" cy="42" r="3" fill="#2d3748"/>
+        <path d="M 30 65 Q 50 80 70 65" stroke="#2d3748" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <text x="50" y="25" text-anchor="middle" font-size="12" fill="white" font-weight="bold">Y</text>
+      </svg>
+    </div>
+    <div class="character bouncing" style="animation-delay: 0.6s;">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="45" fill="#a18cd1" stroke="#7c3aed" stroke-width="3"/>
+        <circle cx="35" cy="42" r="6" fill="white"/><circle cx="65" cy="42" r="6" fill="white"/>
+        <circle cx="35" cy="42" r="3" fill="#2d3748"/><circle cx="65" cy="42" r="3" fill="#2d3748"/>
+        <path d="M 30 65 Q 50 80 70 65" stroke="#2d3748" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <text x="50" y="25" text-anchor="middle" font-size="12" fill="white" font-weight="bold">+</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="card-3d p-8 max-w-2xl w-full">
+    <h2 class="text-3xl font-bold text-center text-purple-700 mb-6">👥 Choose Number of Players</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <button onclick="selectPlayers(1)" class="btn-3d btn-blue p-6 rounded-2xl text-xl">
+        <div class="text-4xl mb-2">🤖</div>1 Player<br><span class="text-sm">vs Computer</span>
+      </button>
+      <button onclick="selectPlayers(2)" class="btn-3d btn-green p-6 rounded-2xl text-xl">
+        <div class="text-4xl mb-2">👥</div>2 Players
+      </button>
+      <button onclick="selectPlayers(3)" class="btn-3d btn-purple p-6 rounded-2xl text-xl">
+        <div class="text-4xl mb-2">👨‍👩‍👧</div>3 Players
+      </button>
+      <button onclick="selectPlayers(4)" class="btn-3d btn-orange p-6 rounded-2xl text-xl">
+        <div class="text-4xl mb-2">👨‍👩‍👧‍👦</div>4 Players
+      </button>
+    </div>
+
+    <div id="playerNamesArea" class="hidden">
+      <h3 class="text-2xl font-bold text-center text-purple-700 mb-4">✏️ Enter Player Names and Emojis</h3>
+      <div id="nameInputs" class="space-y-3 mb-6"></div>
+
+      <h3 class="text-xl font-bold text-center text-purple-700 mb-3">🎯 Difficulty Level</h3>
+      <div class="flex justify-center gap-3 mb-6 flex-wrap">
+        <button onclick="setDifficulty('easy')" id="diffEasy" class="btn-3d btn-green px-6 py-3 rounded-xl">😊 Easy</button>
+        <button onclick="setDifficulty('medium')" id="diffMedium" class="btn-3d btn-orange px-6 py-3 rounded-xl">🔥 Medium</button>
+        <button onclick="setDifficulty('hard')" id="diffHard" class="btn-3d px-6 py-3 rounded-xl">💀 Hard</button>
+      </div>
+
+      <h3 class="text-xl font-bold text-center text-purple-700 mb-3">🔢 Rounds per Player</h3>
+      <div class="flex justify-center gap-3 mb-6">
+        <button onclick="setRounds(3)" id="r3" class="btn-3d btn-blue px-5 py-2 rounded-xl">3</button>
+        <button onclick="setRounds(5)" id="r5" class="btn-3d btn-blue px-5 py-2 rounded-xl">5</button>
+        <button onclick="setRounds(7)" id="r7" class="btn-3d btn-blue px-5 py-2 rounded-xl">7</button>
+      </div>
+
+      <button onclick="startGame()" class="btn-3d w-full py-4 rounded-2xl text-2xl pulse-btn">
+        🚀 START THE BATTLE! 🚀
+      </button>
+    </div>
+  </div>
+
+  <div class="glass mt-6 p-4 rounded-2xl max-w-2xl text-white text-center">
+    <p class="font-bold text-lg">📚 How to Play</p>
+    <p class="text-sm mt-1">Pick a player emoji, solve equations faster than your opponents, and use emoji reactions during your turn. Correct answers = points. Speed = bonus points. Highest score wins! 🏆</p>
+  </div>
+</div>
+
+<!-- ================= GAME SCREEN ================= -->
+<div id="gameScreen" class="hidden-screen min-h-screen p-4">
+  <!-- Header -->
+  <div class="glass rounded-2xl p-4 mb-4 flex flex-wrap justify-between items-center gap-3">
+    <div class="text-white font-bold text-xl">🎯 Round <span id="roundDisplay">1</span> / <span id="totalRounds">5</span></div>
+    <div class="text-white font-bold text-xl">⏱️ Time: <span id="timerDisplay">30</span>s</div>
+    <button onclick="quitGame()" class="btn-3d px-4 py-2 rounded-xl text-sm">🏠 Home</button>
+  </div>
+
+  <!-- Timer bar -->
+  <div class="w-full bg-white/30 rounded-full mb-4 overflow-hidden">
+    <div id="timerBar" class="timer-bar" style="width: 100%;"></div>
+  </div>
+
+  <!-- Scoreboard -->
+  <div id="scoreboard" class="flex flex-wrap justify-center gap-4 mb-6"></div>
+
+  <!-- Current player -->
+  <div class="text-center mb-4">
+    <div class="text-white text-2xl font-bold">
+      <span id="currentPlayerLabel">Player 1</span>'s Turn!
+    </div>
+  </div>
+
+  <!-- Emoji reactions -->
+  <div id="emojiReactionBar" class="text-center mb-4">
+    <div class="glass inline-flex flex-wrap items-center justify-center gap-2 px-4 py-3 rounded-2xl">
+      <span class="text-white font-bold mr-1">Show an emoji:</span>
+      <button type="button" onclick="showEmoji('😀')" class="emoji-choice" aria-label="Show happy emoji">😀</button>
+      <button type="button" onclick="showEmoji('😎')" class="emoji-choice" aria-label="Show cool emoji">😎</button>
+      <button type="button" onclick="showEmoji('🤔')" class="emoji-choice" aria-label="Show thinking emoji">🤔</button>
+      <button type="button" onclick="showEmoji('💪')" class="emoji-choice" aria-label="Show strong emoji">💪</button>
+      <button type="button" onclick="showEmoji('🎉')" class="emoji-choice" aria-label="Show party emoji">🎉</button>
+      <button type="button" onclick="showEmoji('🔥')" class="emoji-choice" aria-label="Show fire emoji">🔥</button>
+      <button type="button" onclick="showEmoji('🧠')" class="emoji-choice" aria-label="Show brain emoji">🧠</button>
+      <button type="button" onclick="showEmoji('⭐')" class="emoji-choice" aria-label="Show star emoji">⭐</button>
+    </div>
+  </div>
+  <div id="emojiBubble" class="emoji-bubble hidden-screen"></div>
+
+  <!-- Equation card -->
+  <div id="equationCard" class="card-3d p-8 max-w-3xl mx-auto text-center">
+    <div class="mb-4">
+      <span class="text-lg text-purple-600 font-bold">Solve for the variable:</span>
+    </div>
+    <div id="equationDisplay" class="equation-box mb-6 py-4">3x + 5 = 20</div>
+
+    <div id="answerArea" class="mb-4">
+      <label class="text-2xl font-bold text-gray-700 mr-3">x =</label>
+      <input type="text" id="answerInput" class="answer-input" placeholder="?" autocomplete="off">
+    </div>
+
+    <button id="submitBtn" onclick="submitAnswer()" class="btn-3d btn-green px-8 py-3 rounded-2xl text-xl mt-2">
+      ✅ Submit Answer
+    </button>
+    <button id="hintBtn" onclick="showHint()" class="btn-3d btn-purple px-6 py-3 rounded-2xl text-lg mt-2 ml-2">
+      💡 Hint (-2 pts)
+    </button>
+
+    <div id="hintArea" class="hidden mt-4"></div>
+    <div id="feedbackArea" class="mt-4 text-xl font-bold"></div>
+  </div>
+
+  <!-- Computer thinking indicator -->
+  <div id="computerThinking" class="hidden-screen text-center mt-4">
+    <div class="glass inline-block px-6 py-3 rounded-2xl">
+      <span class="text-white text-2xl font-bold">🤖 Computer is thinking</span>
+      <span class="thinking inline-block text-3xl">🤔</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= END SCREEN ================= -->
+<div id="endScreen" class="hidden-screen min-h-screen flex flex-col items-center justify-center p-4">
+  <h1 class="text-6xl md:text-7xl font-black text-white glow mb-2 floating">🏆 GAME OVER 🏆</h1>
+  <div id="winnerDisplay" class="text-4xl font-bold text-yellow-300 mb-8 text-center"></div>
+
+  <div class="card-3d p-8 max-w-2xl w-full">
+    <h2 class="text-3xl font-bold text-center text-purple-700 mb-6">📊 Final Scoreboard</h2>
+    <div id="finalScoreboard" class="space-y-3 mb-6"></div>
+
+    <div class="flex gap-3 justify-center flex-wrap">
+      <button onclick="playAgain()" class="btn-3d btn-green px-6 py-3 rounded-2xl text-xl">🔄 Play Again</button>
+      <button onclick="backToHome()" class="btn-3d btn-blue px-6 py-3 rounded-2xl text-xl">🏠 Home</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ GAME STATE ============
+const state = {
+  numPlayers: 0,
+  players: [],
+  difficulty: 'easy',
+  rounds: 5,
+  currentRound: 1,
+  currentPlayerIdx: 0,
+  currentAnswer: 0,
+  currentEquation: '',
+  currentSteps: [],
+  timer: null,
+  timeLeft: 30,
+  hintUsed: false,
+  vsComputer: false,
+  emojiTimeout: null
+};
+
+const defaultPlayerEmojis = ['🦸','🧙','🦊','🐼','🦁'];
+const emojiPalette = ['🦸','🧙','🦊','🐼','🦁','😀','😎','🤔','🧠','🚀','⭐','🔥','🎯','🏆','🐯','🦉'];
+const characterColors = [
+  { fill: '#ff6b6b', stroke: '#c44569', name: 'Red' },
+  { fill: '#4facfe', stroke: '#0891b2', name: 'Blue' },
+  { fill: '#43e97b', stroke: '#059669', name: 'Green' },
+  { fill: '#a18cd1', stroke: '#7c3aed', name: 'Purple' },
+  { fill: '#fee140', stroke: '#ea580c', name: 'Yellow' }
+];
+
+// ============ HOME SCREEN LOGIC ============
+function selectPlayers(n) {
+  state.numPlayers = n;
+  state.vsComputer = (n === 1);
+  document.getElementById('playerNamesArea').classList.remove('hidden');
+  const inputs = document.getElementById('nameInputs');
+  inputs.innerHTML = '';
+  const count = state.vsComputer ? 1 : n;
+  for (let i = 0; i < count; i++) {
+    const defaultEmoji = defaultPlayerEmojis[i];
+    const paletteButtons = emojiPalette.map(emoji => `
+          <button type="button" onclick="setPlayerEmoji(${i}, '${emoji}')" class="emoji-choice setup-emoji" aria-label="Use ${emoji} as Player ${i+1} emoji">${emoji}</button>`).join('');
+    inputs.innerHTML += `
+      <div class="bg-purple-50/80 rounded-2xl p-3 border-4 border-purple-100">
+        <div class="flex flex-col sm:flex-row items-center gap-3">
+          <div id="emojiPreview${i}" class="text-5xl w-16 h-16 flex items-center justify-center rounded-2xl bg-white border-4 border-purple-200">${defaultEmoji}</div>
+          <input type="text" id="pemoji${i}" maxlength="8" value="${defaultEmoji}" aria-label="Player ${i+1} emoji"
+            oninput="previewEmoji(${i})"
+            class="w-24 text-4xl text-center p-2 rounded-xl border-4 border-purple-300 focus:border-purple-600 outline-none">
+          <input type="text" id="pname${i}" placeholder="Player ${i+1} name" 
+            value="Player ${i+1}" 
+            class="flex-1 text-xl p-3 rounded-xl border-4 border-purple-300 focus:border-purple-600 outline-none">
+        </div>
+        <div class="flex flex-wrap justify-center gap-2 mt-3">
+${paletteButtons}
+        </div>
+      </div>`;
+  }
+  if (state.vsComputer) {
+    inputs.innerHTML += `
+      <div class="flex items-center gap-3">
+        <div class="text-3xl">🤖</div>
+        <div class="flex-1 text-xl p-3 rounded-xl bg-gray-200 font-bold text-center">Computer (AI Opponent)</div>
+      </div>`;
+  }
+  setDifficulty('easy');
+  setRounds(5);
+}
+
+function setDifficulty(d) {
+  state.difficulty = d;
+  ['diffEasy','diffMedium','diffHard'].forEach(id => {
+    document.getElementById(id).classList.remove('player-active');
+  });
+  document.getElementById('diff' + d.charAt(0).toUpperCase() + d.slice(1)).classList.add('player-active');
+}
+
+function setRounds(r) {
+  state.rounds = r;
+  ['r3','r5','r7'].forEach(id => document.getElementById(id).classList.remove('player-active'));
+  document.getElementById('r' + r).classList.add('player-active');
+}
+
+function cleanDisplayText(value, fallback, maxLength = 30) {
+  const cleaned = String(value || '').replace(/[<>&"']/g, '').trim().slice(0, maxLength);
+  return cleaned || fallback;
+}
+
+function setPlayerEmoji(playerIndex, emoji) {
+  const emojiInput = document.getElementById('pemoji' + playerIndex);
+  if (!emojiInput) return;
+  emojiInput.value = emoji;
+  previewEmoji(playerIndex);
+}
+
+function previewEmoji(playerIndex) {
+  const emojiInput = document.getElementById('pemoji' + playerIndex);
+  const preview = document.getElementById('emojiPreview' + playerIndex);
+  if (!emojiInput || !preview) return;
+  preview.textContent = cleanDisplayText(emojiInput.value, defaultPlayerEmojis[playerIndex], 8);
+}
+
+// ============ EQUATION GENERATOR ============
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function nonZero(min, max) {
+  let n;
+  do { n = randInt(min, max); } while (n === 0);
+  return n;
+}
+
+// Generate equation based on difficulty. Returns {equation, answer, steps}
+function generateEquation() {
+  const type = Math.random();
+  const d = state.difficulty;
+  let x, equation, steps;
+
+  if (d === 'easy') {
+    // Two types: ax + b = c   OR   ax - b = c
+    x = randInt(-10, 10);
+    const a = nonZero(2, 8);
+    const b = nonZero(-15, 15);
+    const c = a * x + b;
+    const bStr = b >= 0 ? `+ ${b}` : `- ${-b}`;
+    equation = `${a}x ${bStr} = ${c}`;
+    steps = [
+      `Start: ${a}x ${bStr} = ${c}`,
+      `Subtract ${b >= 0 ? b : `(${b})`} from both sides → ${a}x = ${c - b}`,
+      `Divide both sides by ${a} → x = ${x}`
+    ];
+    return { equation, answer: x, steps };
+  }
+
+  if (d === 'medium') {
+    // ax + b = cx + d  (variables on both sides)
+    x = randInt(-8, 8);
+    let a = nonZero(2, 7);
+    let c = nonZero(-6, 6);
+    while (a === c) c = nonZero(-6, 6);
+    const b = randInt(-10, 10);
+    const d2 = (a - c) * x + b;
+    const bStr = b >= 0 ? `+ ${b}` : `- ${-b}`;
+    const cStr = c >= 0 ? `+ ${c}x` : `- ${-c}x`;
+    const dStr = d2 >= 0 ? `+ ${d2}` : `- ${-d2}`;
+    // Format nicely, hide leading + if first term
+    equation = `${a}x ${bStr} = ${c < 0 ? `-${-c}x` : `${c}x`} ${dStr}`;
+    steps = [
+      `Start: ${a}x ${bStr} = ${c}x ${dStr}`,
+      `Move x-terms to left: (${a} - ${c})x = ${d2} - (${b}) → ${a-c}x = ${d2 - b}`,
+      `Divide by ${a-c} → x = ${x}`
+    ];
+    return { equation, answer: x, steps };
+  }
+
+  // HARD: distribution & variables on both sides:  a(x + b) = c(x + d) + e
+  x = randInt(-6, 6);
+  let a = nonZero(2, 5);
+  let c = nonZero(2, 5);
+  while (a === c) c = nonZero(2, 5);
+  const b = randInt(-6, 6);
+  const dv = randInt(-6, 6);
+  // a(x+b) = c(x+d) + e  =>  ax + ab = cx + cd + e  =>  (a-c)x = cd + e - ab
+  // Choose e so that x is the target
+  const e = (a - c) * x - (c * dv - a * b);
+  const bStr = b >= 0 ? `+ ${b}` : `- ${-b}`;
+  const dStr = dv >= 0 ? `+ ${dv}` : `- ${-dv}`;
+  const eStr = e >= 0 ? `+ ${e}` : `- ${-e}`;
+  equation = `${a}(x ${bStr}) = ${c}(x ${dStr}) ${eStr}`;
+  steps = [
+    `Distribute: ${a}x ${a*b >= 0 ? '+ '+a*b : '- '+(-a*b)} = ${c}x ${c*dv >= 0 ? '+ '+c*dv : '- '+(-c*dv)} ${eStr}`,
+    `Collect x-terms & constants: ${a-c}x = ${c*dv + e - a*b}`,
+    `Divide by ${a-c} → x = ${x}`
+  ];
+  return { equation, answer: x, steps };
+}
+
+// ============ START GAME ============
+function startGame() {
+  state.players = [];
+  const count = state.vsComputer ? 1 : state.numPlayers;
+  for (let i = 0; i < count; i++) {
+    const name = cleanDisplayText(document.getElementById('pname'+i).value, `Player ${i+1}`);
+    const emoji = cleanDisplayText(document.getElementById('pemoji'+i).value, defaultPlayerEmojis[i], 8);
+    state.players.push({ name, emoji, score: 0, color: characterColors[i], isComputer: false });
+  }
+  if (state.vsComputer) {
+    state.players.push({ name: 'Computer', emoji: '🤖', score: 0, color: characterColors[4], isComputer: true });
+  }
+  state.currentRound = 1;
+  state.currentPlayerIdx = 0;
+  document.getElementById('homeScreen').classList.add('hidden-screen');
+  document.getElementById('endScreen').classList.add('hidden-screen');
+  document.getElementById('gameScreen').classList.remove('hidden-screen');
+  document.getElementById('totalRounds').textContent = state.rounds;
+  renderScoreboard();
+  nextTurn();
+}
+
+// ============ RENDER SCOREBOARD ============
+function renderScoreboard() {
+  const sb = document.getElementById('scoreboard');
+  sb.innerHTML = '';
+  state.players.forEach((p, i) => {
+    const isActive = i === state.currentPlayerIdx;
+    const face = p.emoji || (p.isComputer ? '🤖' : defaultPlayerEmojis[i]);
+    sb.innerHTML += `
+      <div class="card-3d p-3 min-w-[140px] text-center ${isActive ? 'player-active' : ''}">
+        <svg class="mx-auto" width="70" height="70" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="${p.color.fill}" stroke="${p.color.stroke}" stroke-width="3"/>
+          <circle cx="35" cy="42" r="6" fill="white"/><circle cx="65" cy="42" r="6" fill="white"/>
+          <circle cx="35" cy="42" r="3" fill="#2d3748"/><circle cx="65" cy="42" r="3" fill="#2d3748"/>
+          <path d="M 30 65 Q 50 80 70 65" stroke="#2d3748" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <text x="50" y="29" text-anchor="middle" font-size="20">${face}</text>
+        </svg>
+        <div class="font-bold text-purple-700 truncate">${face} ${p.name}</div>
+        <div class="text-2xl font-black text-orange-600">⭐ ${p.score}</div>
+      </div>`;
+  });
+}
+
+// ============ NEXT TURN ============
+function nextTurn() {
+  if (state.currentRound > state.rounds) {
+    endGame();
+    return;
+  }
+  document.getElementById('roundDisplay').textContent = state.currentRound;
+  const currentPlayer = state.players[state.currentPlayerIdx];
+  document.getElementById('currentPlayerLabel').textContent = `${currentPlayer.emoji || ''} ${currentPlayer.name}`;
+  document.getElementById('currentPlayerLabel').style.color = currentPlayer.color.fill;
+
+  // Generate new equation
+  const eq = generateEquation();
+  state.currentEquation = eq.equation;
+  state.currentAnswer = eq.answer;
+  state.currentSteps = eq.steps;
+  state.hintUsed = false;
+
+  document.getElementById('equationDisplay').textContent = eq.equation;
+  document.getElementById('answerInput').value = '';
+  document.getElementById('feedbackArea').textContent = '';
+  document.getElementById('feedbackArea').className = 'mt-4 text-xl font-bold';
+  document.getElementById('hintArea').classList.add('hidden');
+  document.getElementById('hintArea').innerHTML = '';
+
+  renderScoreboard();
+
+  // Determine max time based on difficulty
+  const maxTime = state.difficulty === 'easy' ? 30 : state.difficulty === 'medium' ? 40 : 50;
+  state.timeLeft = maxTime;
+  document.getElementById('timerDisplay').textContent = state.timeLeft;
+  document.getElementById('timerBar').style.width = '100%';
+
+  if (currentPlayer.isComputer) {
+    document.getElementById('emojiReactionBar').style.display = 'none';
+    document.getElementById('answerArea').style.opacity = '0.5';
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('hintBtn').disabled = true;
+    document.getElementById('computerThinking').classList.remove('hidden-screen');
+    showEmoji('🤔');
+    computerTurn(maxTime);
+  } else {
+    document.getElementById('emojiReactionBar').style.display = 'block';
+    document.getElementById('answerArea').style.opacity = '1';
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('hintBtn').disabled = false;
+    document.getElementById('computerThinking').classList.add('hidden-screen');
+    document.getElementById('answerInput').focus();
+    startTimer(maxTime);
+  }
+}
+
+// ============ TIMER ============
+function startTimer(maxTime) {
+  clearInterval(state.timer);
+  state.timer = setInterval(() => {
+    state.timeLeft--;
+    document.getElementById('timerDisplay').textContent = state.timeLeft;
+    document.getElementById('timerBar').style.width = (state.timeLeft / maxTime * 100) + '%';
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timer);
+      timeOut();
+    }
+  }, 1000);
+}
+
+// ============ SUBMIT ANSWER ============
+function submitAnswer() {
+  const input = document.getElementById('answerInput').value.trim();
+  if (input === '') return;
+  clearInterval(state.timer);
+  const userAns = parseFloat(input);
+  const card = document.getElementById('equationCard');
+  const feedback = document.getElementById('feedbackArea');
+  const player = state.players[state.currentPlayerIdx];
+
+  if (userAns === state.currentAnswer) {
+    // Correct! Award points based on time remaining
+    const maxTime = state.difficulty === 'easy' ? 30 : state.difficulty === 'medium' ? 40 : 50;
+    const basePts = state.difficulty === 'easy' ? 10 : state.difficulty === 'medium' ? 15 : 20;
+    const timeBonus = Math.floor((state.timeLeft / maxTime) * 10);
+    let pts = basePts + timeBonus;
+    if (state.hintUsed) pts = Math.max(1, pts - 2);
+    player.score += pts;
+    feedback.innerHTML = `🎉 CORRECT! +${pts} points! ${'<span class="star">⭐</span>'.repeat(Math.min(5, Math.ceil(pts/5)))}`;
+    feedback.className = 'mt-4 text-2xl font-bold text-green-600';
+    card.classList.add('correct-anim');
+    launchConfetti();
+    setTimeout(() => { card.classList.remove('correct-anim'); advanceTurn(); }, 1800);
+  } else {
+    feedback.innerHTML = `❌ Wrong! The correct answer was <span class="text-blue-600">x = ${state.currentAnswer}</span>`;
+    feedback.className = 'mt-4 text-2xl font-bold text-red-600';
+    card.classList.add('wrong-anim');
+    setTimeout(() => { card.classList.remove('wrong-anim'); advanceTurn(); }, 2200);
+  }
+}
+
+function timeOut() {
+  const feedback = document.getElementById('feedbackArea');
+  feedback.innerHTML = `⏰ Time's up! Answer was <span class="text-blue-600">x = ${state.currentAnswer}</span>`;
+  feedback.className = 'mt-4 text-2xl font-bold text-orange-600';
+  setTimeout(advanceTurn, 2000);
+}
+
+function showHint() {
+  state.hintUsed = true;
+  const hintArea = document.getElementById('hintArea');
+  hintArea.classList.remove('hidden');
+  hintArea.innerHTML = `
+    <div class="step-hint text-left">
+      <div class="font-bold text-lg mb-1">💡 Step-by-step guide:</div>
+      ${state.currentSteps.slice(0, 2).map(s => `<div>• ${s}</div>`).join('')}
+    </div>`;
+  document.getElementById('hintBtn').disabled = true;
+}
+
+function showEmoji(emoji) {
+  const bubble = document.getElementById('emojiBubble');
+  const player = state.players[state.currentPlayerIdx];
+  if (!bubble || !player) return;
+  bubble.textContent = `${player.emoji || ''} ${emoji}`.trim();
+  bubble.classList.remove('hidden-screen');
+  bubble.style.animation = 'none';
+  void bubble.offsetWidth;
+  bubble.style.animation = 'emojiPop 1.4s ease-out forwards';
+  clearTimeout(state.emojiTimeout);
+  state.emojiTimeout = setTimeout(() => bubble.classList.add('hidden-screen'), 1400);
+}
+
+// ============ COMPUTER TURN ============
+function computerTurn(maxTime) {
+  // Computer difficulty: easy => 60% accuracy, medium => 75%, hard => 85%
+  const accuracy = state.difficulty === 'easy' ? 0.6 : state.difficulty === 'medium' ? 0.75 : 0.85;
+  // Random thinking time between 4 and maxTime-5
+  const thinkTime = randInt(4, maxTime - 8);
+  state.timeLeft = maxTime;
+  document.getElementById('timerDisplay').textContent = state.timeLeft;
+  document.getElementById('timerBar').style.width = '100%';
+  clearInterval(state.timer);
+  state.timer = setInterval(() => {
+    state.timeLeft--;
+    document.getElementById('timerDisplay').textContent = state.timeLeft;
+    document.getElementById('timerBar').style.width = (state.timeLeft / maxTime * 100) + '%';
+  }, 1000);
+
+  setTimeout(() => {
+    clearInterval(state.timer);
+    document.getElementById('computerThinking').classList.add('hidden-screen');
+    const willGetRight = Math.random() < accuracy;
+    const card = document.getElementById('equationCard');
+    const feedback = document.getElementById('feedbackArea');
+    const player = state.players[state.currentPlayerIdx];
+    document.getElementById('answerInput').value = willGetRight ? state.currentAnswer : (state.currentAnswer + (Math.random() < 0.5 ? 1 : -1) * randInt(1,3));
+
+    if (willGetRight) {
+      const basePts = state.difficulty === 'easy' ? 10 : state.difficulty === 'medium' ? 15 : 20;
+      const timeBonus = Math.floor((state.timeLeft / maxTime) * 10);
+      const pts = basePts + timeBonus;
+      player.score += pts;
+      feedback.innerHTML = `🤖 Computer got it! +${pts} points!`;
+      feedback.className = 'mt-4 text-2xl font-bold text-green-600';
+      card.classList.add('correct-anim');
+      setTimeout(() => { card.classList.remove('correct-anim'); advanceTurn(); }, 1800);
+    } else {
+      feedback.innerHTML = `🤖 Computer got it wrong! Answer was x = ${state.currentAnswer}`;
+      feedback.className = 'mt-4 text-2xl font-bold text-red-600';
+      card.classList.add('wrong-anim');
+      setTimeout(() => { card.classList.remove('wrong-anim'); advanceTurn(); }, 2000);
+    }
+  }, thinkTime * 1000);
+}
+
+// ============ ADVANCE TURN ============
+function advanceTurn() {
+  state.currentPlayerIdx++;
+  if (state.currentPlayerIdx >= state.players.length) {
+    state.currentPlayerIdx = 0;
+    state.currentRound++;
+  }
+  nextTurn();
+}
+
+// ============ END GAME ============
+function endGame() {
+  clearInterval(state.timer);
+  document.getElementById('gameScreen').classList.add('hidden-screen');
+  document.getElementById('endScreen').classList.remove('hidden-screen');
+  const sorted = [...state.players].sort((a,b) => b.score - a.score);
+  const winner = sorted[0];
+  const tie = sorted.length > 1 && sorted[0].score === sorted[1].score;
+
+  const winnerDisplay = document.getElementById('winnerDisplay');
+  if (tie) {
+    winnerDisplay.innerHTML = `🤝 It's a TIE! 🤝`;
+  } else {
+    winnerDisplay.innerHTML = `👑 ${winner.name} WINS! 👑`;
+  }
+
+  const fs = document.getElementById('finalScoreboard');
+  fs.innerHTML = '';
+  sorted.forEach((p, i) => {
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🎖️';
+    const face = p.emoji || (p.isComputer ? '🤖' : defaultPlayerEmojis[i]);
+    fs.innerHTML += `
+      <div class="flex items-center justify-between p-4 rounded-2xl ${i === 0 ? 'bg-yellow-100 border-4 border-yellow-400' : 'bg-purple-50'}">
+        <div class="flex items-center gap-3">
+          <div class="text-4xl">${medal}</div>
+          <svg width="50" height="50" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="${p.color.fill}" stroke="${p.color.stroke}" stroke-width="3"/>
+            <circle cx="35" cy="42" r="6" fill="white"/><circle cx="65" cy="42" r="6" fill="white"/>
+            <circle cx="35" cy="42" r="3" fill="#2d3748"/><circle cx="65" cy="42" r="3" fill="#2d3748"/>
+            <path d="M 30 65 Q 50 80 70 65" stroke="#2d3748" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <text x="50" y="29" text-anchor="middle" font-size="17">${face}</text>
+          </svg>
+          <div class="text-2xl font-bold text-purple-700">${face} ${p.name}</div>
+        </div>
+        <div class="text-3xl font-black text-orange-600">${p.score} pts</div>
+      </div>`;
+  });
+
+  if (!tie) launchConfetti(80);
+}
+
+function playAgain() {
+  state.players.forEach(p => p.score = 0);
+  state.currentRound = 1;
+  state.currentPlayerIdx = 0;
+  document.getElementById('endScreen').classList.add('hidden-screen');
+  document.getElementById('gameScreen').classList.remove('hidden-screen');
+  nextTurn();
+}
+
+function backToHome() {
+  document.getElementById('endScreen').classList.add('hidden-screen');
+  document.getElementById('gameScreen').classList.add('hidden-screen');
+  document.getElementById('homeScreen').classList.remove('hidden-screen');
+  document.getElementById('playerNamesArea').classList.add('hidden');
+}
+
+function quitGame() {
+  if (confirm('Quit the current game and return home?')) {
+    clearInterval(state.timer);
+    backToHome();
+  }
+}
+
+// ============ CONFETTI ============
+function launchConfetti(count = 40) {
+  const colors = ['#ff6b6b','#4facfe','#43e97b','#a18cd1','#fee140','#f093fb'];
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.top = '-20px';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    const fall = c.animate([
+      { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+      { transform: `translateY(100vh) rotate(${Math.random()*720}deg)`, opacity: 0 }
+    ], { duration: 2000 + Math.random()*1500, easing: 'ease-in' });
+    fall.onfinish = () => c.remove();
+  }
+}
+
+// Enter key submits answer
+document.getElementById('answerInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitAnswer();
+});
+</script>
+</body>
+</html>
